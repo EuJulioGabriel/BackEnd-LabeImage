@@ -12,5 +12,6 @@ export interface ImageOutputDTO {
 	id: string,
 	createdAt: string,
 	file: string,
-	tags: string
+	tags: string,
+	name: string,
 }

@@ -30,9 +30,7 @@ export class ImageController {
 
         } catch (error) {
             res.status(error.code || 400).send({ error: error.message });
-        }
-
-        await BaseDatabase.destroyConnection();
+        }  
     }
 
     async getAllImages(req: Request, res: Response) {
@@ -45,9 +43,9 @@ export class ImageController {
 
         } catch (error) {
             res.status(error.code || 400).send({ error: error.message });
-        }
-
-        await BaseDatabase.destroyConnection();
+        } finally {
+            await BaseDatabase.destroyConnection();
+        }        
     }
 
    async getImageById(req: Request, res: Response) {
@@ -60,8 +58,8 @@ export class ImageController {
             res.status(200).send({ message: image });
         } catch (error) {
             res.status(error.code || 400).send({ error: error.message });
-        }
-
-        await BaseDatabase.destroyConnection();
+        } finally {
+            await BaseDatabase.destroyConnection();
+        }        
     }
 }
