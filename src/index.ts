@@ -15,7 +15,7 @@ app.use(cors())
 app.use("/user", userRouter)
 app.use("/image", imageRouter)
 
-const server = app.listen(3003, () => {
+const server = app.listen(3000, () => {
   if (server) {
     const address = server.address() as AddressInfo;
     console.log(`Servidor rodando em http://localhost:${address.port}`)
