@@ -8,3 +8,4 @@ const collectionController = new CollectionController()
 
 collectionRouter.put("/createcollection", collectionController.createCollection)
 collectionRouter.put("/addimagetocollection", collectionController.addImageToCollection)
+collectionRouter.get("/getallcollections", collectionController.getAllCollections)
