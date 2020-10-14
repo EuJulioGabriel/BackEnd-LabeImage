@@ -14,7 +14,7 @@ export class UserDatabase extends BaseDatabase {
         dbModel.nickname,
         dbModel.password,
       )
-    );
+    )
   }
 
   public async createUser(
@@ -35,7 +35,7 @@ export class UserDatabase extends BaseDatabase {
         })
         .into(UserDatabase.TABLE_NAME);
     } catch (error) {
-      throw new Error(error.sqlMessage || error.message);
+      throw new Error(error.sqlMessage || error.message)
     }
   }
 
@@ -44,7 +44,7 @@ export class UserDatabase extends BaseDatabase {
       const result = await super.getConnection().raw(`
         SELECT * from ${UserDatabase.TABLE_NAME} WHERE email = '${email}'
       `);
-      return this.toModel(result[0][0]);
+      return this.toModel(result[0][0])
     } catch (error) {
       throw new Error(error.sqlMessage || error.message)
     }

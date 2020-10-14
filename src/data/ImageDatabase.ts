@@ -1,18 +1,17 @@
-import { BaseDatabase } from "./BaseDatabase";
-import { ImageOutputDTO } from "../model/Image";
-import moment from 'moment'
+import { BaseDatabase } from "./BaseDatabase"
+import { Image } from "../model/Image"
 
 export class ImageDatabase extends BaseDatabase {
-  private static TABLE_NAME = "LABEIMAGE_IMAGES";
+  private static TABLE_NAME = "LABEIMAGE_IMAGES"
 
   public async createImage(
-  id: string,
-	subtitle: string,
-	author: string,
-	date: string,
-	file: string,
-	tags: string,
-	collection: string
+    id: string,
+    subtitle: string,
+    author: string,
+    date: string,
+    file: string,
+    tags: string,
+    collection: string
   ): Promise<void> {
     try {
       await this.getConnection()
@@ -27,11 +26,11 @@ export class ImageDatabase extends BaseDatabase {
         })
         .into(ImageDatabase.TABLE_NAME);
     } catch (error) {
-      throw new Error(error.sqlMessage || error.message);
+      throw new Error(error.sqlMessage || error.message)
     }
   }
 
-  public async getAllImages(id: string): Promise<ImageOutputDTO[]> {
+  public async getAllImages(id: string): Promise<Image[]> {
     try {
       const result = await super.getConnection().raw(`
         SELECT LI.author_id, LI.collection, LI.subtitle, LI.id, LI.createdAt, LI.file, LI.tags, LI.collection, LU.name
@@ -40,57 +39,587 @@ export class ImageDatabase extends BaseDatabase {
         ON "${id}" = LU.id
         WHERE author_id = "${id}"
         ORDER BY createdAt ASC;
-      `);
+      `)
 
-      const images: ImageOutputDTO[] = []
-      
       const data: any[] = result[0]
 
-      data.forEach((image: any) => {
-        const imageToModel: ImageOutputDTO = {
-          author_id: image.author_id,
-          collection: image.collection,
-          subtitle: image.subtitle,
-          id: image.id,
-          createdAt: moment(image.createdAt).format("DD/MM/YYYY"),
-          file: image.file,
-          tags: image.tags,
-          name: image.name
-        }
+      const images: Image[] = []
 
-        images.push(imageToModel)
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
       })
 
       return images
     } catch (error) {
-      console.log(error)
       throw new Error(error.sqlMessage || error.message)
     }
   }
 
-  public async getImageById(idDaImagem: string, idDoUsuário: string): Promise<ImageOutputDTO> {
+  public async getImageById(idImage: string, idUser: string): Promise<Image> {
     try {
       const result = await super.getConnection().raw(`
         SELECT LI.author_id, LI.collection, LI.subtitle, LI.id, LI.createdAt, LI.file, LI.tags, LI.collection, LU.name
         FROM LABEIMAGE_USERS LU
         JOIN LABEIMAGE_IMAGES LI
-        ON "${idDoUsuário}" = LU.id
-        WHERE LI.id = "${idDaImagem}" 
+        ON "${idUser}" = LU.id
+        WHERE LI.id = "${idImage}" 
         ORDER BY createdAt ASC;
-      `);
+      `)
 
-      const imageToModel: ImageOutputDTO = {
-        author_id: result[0][0].author_id,
-        collection: result[0][0].collection,
-        subtitle: result[0][0].subtitle,
-        id: result[0][0].id,
-        createdAt: moment(result[0][0].createdAt).format("DD/MM/YYYY"),
-        file: result[0][0].file,
-        tags: result[0][0].tags,
-        name: result[0][0].name,
-      }
+      const data: any[] = result[0][0]
 
-      return imageToModel
+      const image: Image = Image.toUserModel(data)
+
+      return image
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByDateAuthorCollectionTags(
+    userId: string,
+    date: string, 
+    author: string, 
+    collection: string, 
+    tags: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name, 
+        LCI.addedAt, LCI.collection_id , 
+        LC.title
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        JOIN LABEIMAGE_COLLECTIONIMAGES LCI
+        ON LCI.image_id = LI.id
+        JOIN LABEIMAGE_COLLECTIONS LC
+        ON LCI.collection_id = LC.id
+        WHERE 
+        author_id = "${userId}" AND 
+        LI.createdAt = "${date}" AND 
+        LU.name = "${author}" AND 
+        LC.title = "${collection}" AND
+        LI.tags LIKE '%${tags}%';        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByDateAuthorCollection(
+    userId: string,
+    date: string, 
+    author: string, 
+    collection: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name, 
+        LCI.addedAt, LCI.collection_id , 
+        LC.title
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        JOIN LABEIMAGE_COLLECTIONIMAGES LCI
+        ON LCI.image_id = LI.id
+        JOIN LABEIMAGE_COLLECTIONS LC
+        ON LCI.collection_id = LC.id
+        WHERE 
+        author_id = "${userId}" AND 
+        LI.createdAt = "${date}" AND 
+        LU.name = "${author}" AND 
+        LC.title = "${collection}";       
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+  
+  public async getFilterByDateAuthorTags(
+    userId: string,
+    date: string, 
+    author: string, 
+    tags: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        WHERE 
+        author_id = "${userId}" AND 
+        LI.createdAt = "${date}" AND 
+        LU.name = "${author}" AND
+        LI.tags LIKE '%${tags}%';        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByDateAuthor(
+    userId: string,
+    date: string, 
+    author: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        WHERE 
+        author_id = "${userId}" AND 
+        LI.createdAt = "${date}" AND 
+        LU.name = "${author}";       
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByDateCollectionTags(
+    userId: string,
+    date: string,  
+    collection: string, 
+    tags: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name, 
+        LCI.addedAt, LCI.collection_id , 
+        LC.title
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        JOIN LABEIMAGE_COLLECTIONIMAGES LCI
+        ON LCI.image_id = LI.id
+        JOIN LABEIMAGE_COLLECTIONS LC
+        ON LCI.collection_id = LC.id
+        WHERE 
+        author_id = "${userId}" AND 
+        LI.createdAt = "${date}" AND
+        LC.title = "${collection}" AND
+        LI.tags LIKE '%${tags}%';        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByDateCollection(
+    userId: string,
+    date: string,  
+    collection: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name, 
+        LCI.addedAt, LCI.collection_id , 
+        LC.title
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        JOIN LABEIMAGE_COLLECTIONIMAGES LCI
+        ON LCI.image_id = LI.id
+        JOIN LABEIMAGE_COLLECTIONS LC
+        ON LCI.collection_id = LC.id
+        WHERE 
+        author_id = "${userId}" AND 
+        LI.createdAt = "${date}" AND  
+        LC.title = "${collection}";    
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByDateTags(
+    userId: string,
+    date: string,  
+    tags: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        WHERE 
+        author_id = "${userId}" AND 
+        LI.createdAt = "${date}" AND
+        LI.tags LIKE '%${tags}%';        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByDate(
+    userId: string,
+    date: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        WHERE 
+        author_id = "${userId}" AND 
+        LI.createdAt = "${date}";        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByAuthorCollectionTags(
+    userId: string,
+    author: string, 
+    collection: string, 
+    tags: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name, 
+        LCI.addedAt, LCI.collection_id , 
+        LC.title
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        JOIN LABEIMAGE_COLLECTIONIMAGES LCI
+        ON LCI.image_id = LI.id
+        JOIN LABEIMAGE_COLLECTIONS LC
+        ON LCI.collection_id = LC.id
+        WHERE 
+        author_id = "${userId}" AND 
+        LU.name = "${author}" AND 
+        LC.title = "${collection}" AND
+        LI.tags LIKE '%${tags}%';        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByAuthorCollection(
+    userId: string,
+    author: string, 
+    collection: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name, 
+        LCI.addedAt, LCI.collection_id , 
+        LC.title
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        JOIN LABEIMAGE_COLLECTIONIMAGES LCI
+        ON LCI.image_id = LI.id
+        JOIN LABEIMAGE_COLLECTIONS LC
+        ON LCI.collection_id = LC.id
+        WHERE 
+        author_id = "${userId}" AND  
+        LU.name = "${author}" AND 
+        LC.title = "${collection}";        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByAuthorTags(
+    userId: string,
+    author: string, 
+    tags: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        WHERE 
+        author_id = "${userId}" AND  
+        LU.name = "${author}" AND
+        LI.tags LIKE '%${tags}%';        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByAuthor(
+    userId: string,
+    author: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        WHERE 
+        author_id = "${userId}" AND 
+        LU.name = "${author}";        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByCollectionTags(
+    userId: string, 
+    collection: string, 
+    tags: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name, 
+        LCI.addedAt, LCI.collection_id , 
+        LC.title
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        JOIN LABEIMAGE_COLLECTIONIMAGES LCI
+        ON LCI.image_id = LI.id
+        JOIN LABEIMAGE_COLLECTIONS LC
+        ON LCI.collection_id = LC.id
+        WHERE 
+        author_id = "${userId}" AND 
+        LC.title = "${collection}" AND
+        LI.tags LIKE '%${tags}%';        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByCollection(
+    userId: string, 
+    collection: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name, 
+        LCI.addedAt, LCI.collection_id , 
+        LC.title
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        JOIN LABEIMAGE_COLLECTIONIMAGES LCI
+        ON LCI.image_id = LI.id
+        JOIN LABEIMAGE_COLLECTIONS LC
+        ON LCI.collection_id = LC.id
+        WHERE 
+        author_id = "${userId}" AND  
+        LC.title = "${collection}";        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getFilterByTags(
+    userId: string, 
+    tags: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_USERS LU
+        ON LI.author_id = LU.id
+        WHERE 
+        author_id = "${userId}" AND
+        LI.tags LIKE '%${tags}%';        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
     } catch (error) {
       throw new Error(error.sqlMessage || error.message)
     }

@@ -1,4 +1,4 @@
-import * as jwt from "jsonwebtoken";
+import * as jwt from "jsonwebtoken"
 
 export class Authenticator {
   public generateToken(input: AuthenticationData,
@@ -12,23 +12,23 @@ export class Authenticator {
       {
         expiresIn,
       }
-    );
-    return token;
+    )
+    return token
   }
 
   public getData(token: string): AuthenticationData {
-    const payload = jwt.verify(token, process.env.JWT_KEY as string) as any;
+    const payload = jwt.verify(token, process.env.JWT_KEY as string) as any
     const result = {
       id: payload.id,
       role: payload.role
-    };
-    return result;
+    }
+    return result
   }
 }
 
 export interface AuthenticationData {
-  id: string;
-  role?: UserRole;
+  id: string
+  role?: UserRole
 }
 
 enum UserRole {
