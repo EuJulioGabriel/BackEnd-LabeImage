@@ -11,7 +11,6 @@ export class ImageDatabase extends BaseDatabase {
     date: string,
     file: string,
     tags: string,
-    collection: string
   ): Promise<void> {
     try {
       await this.getConnection()
@@ -22,7 +21,6 @@ export class ImageDatabase extends BaseDatabase {
             createdAt: date,
             file,
             tags,
-            collection,
         })
         .into(ImageDatabase.TABLE_NAME);
     } catch (error) {
@@ -33,7 +31,7 @@ export class ImageDatabase extends BaseDatabase {
   public async getAllImages(id: string): Promise<Image[]> {
     try {
       const result = await super.getConnection().raw(`
-        SELECT LI.author_id, LI.collection, LI.subtitle, LI.id, LI.createdAt, LI.file, LI.tags, LI.collection, LU.name
+        SELECT LI.author_id, LI.subtitle, LI.id, LI.createdAt, LI.file, LI.tags, LU.name
         FROM LABEIMAGE_USERS LU
         JOIN LABEIMAGE_IMAGES LI
         ON "${id}" = LU.id
@@ -60,7 +58,7 @@ export class ImageDatabase extends BaseDatabase {
   public async getImageById(idImage: string, idUser: string): Promise<Image> {
     try {
       const result = await super.getConnection().raw(`
-        SELECT LI.author_id, LI.collection, LI.subtitle, LI.id, LI.createdAt, LI.file, LI.tags, LI.collection, LU.name
+        SELECT LI.author_id, LI.subtitle, LI.id, LI.createdAt, LI.file, LI.tags, LU.name
         FROM LABEIMAGE_USERS LU
         JOIN LABEIMAGE_IMAGES LI
         ON "${idUser}" = LU.id

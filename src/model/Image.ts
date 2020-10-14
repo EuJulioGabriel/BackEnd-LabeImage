@@ -2,7 +2,6 @@ export interface ImageInputDTO{
 	subtitle: string,
 	file: string,
 	tags: string,
-	collection: string
 }
 
 export interface ImageOutputDTO {
@@ -19,7 +18,6 @@ export interface ImageOutputDTO {
 export class Image {
 	constructor(
 		private author_id: string,
-		private collection: string,
 		private subtitle: string,
 		private id: string,
 		private createdAt: string,
@@ -31,10 +29,6 @@ export class Image {
 
 	getAuthorId() {
 		return this.author_id
-	}
-	
-	getCollection() {
-		return this.collection
 	}
 
 	getSubtitle() {
@@ -65,10 +59,6 @@ export class Image {
         this.author_id = id;
 	}
 	
-	setCollection(collection: string) {
-        this.collection = collection;
-	}
-	
 	setSubtitle(subtitle: string) {
 		this.subtitle = subtitle
 	}
@@ -96,7 +86,6 @@ export class Image {
 	static toUserModel(image: any): Image {
 		return (image && new Image(
 				image.author_id,
-				image.collection,
 				image.subtitle,
 				image.id,
 				image.createdAt,
