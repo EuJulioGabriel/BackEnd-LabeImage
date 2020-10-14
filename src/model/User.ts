@@ -8,7 +8,7 @@ export class User{
     ){}
 
     getId(){
-        return this.id;
+        return this.id
     }
 
     getName(){
@@ -16,39 +16,39 @@ export class User{
     }
 
     getEmail(){
-        return this.email;
+        return this.email
     }
 
     getPassword(){
-        return this.password;
+        return this.password
     }
 
     getNickname(){
-        return this.nickname;
+        return this.nickname
     }
 
     setId(id: string){
-        this.id = id;
+        this.id = id
     }
 
     setName(name: string){
-        this.name = name;
+        this.name = name
     }
 
     setEmail(email: string){
-        this.email = email;
+        this.email = email
     }
 
     setPassword(password: string){
-        this.password = password;
+        this.password = password
     }
 
     setNickname(nickname: string){
-        this.nickname = nickname;
+        this.nickname = nickname
     }
 
     static toUserModel(user: any): User {
-        return new User(user.id, user.name, user.email, user.nickname, user.password);
+        return new User(user.id, user.name, user.email, user.nickname, user.password)
     }
 }
 
@@ -60,6 +60,6 @@ export interface UserInputDTO{
 }
 
 export interface LoginInputDTO{
-    email: string;
-    password: string;
+    email: string
+    password: string
 }
