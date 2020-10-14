@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 export interface ImageInputDTO{    
 	subtitle: string,
 	file: string,
@@ -88,7 +90,7 @@ export class Image {
 				image.author_id,
 				image.subtitle,
 				image.id,
-				image.createdAt,
+				moment(image.createdAt).format("DD/MM/YYYY"),
 				image.file,
 				image.tags,
 				image.name,
