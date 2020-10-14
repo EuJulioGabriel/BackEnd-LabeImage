@@ -64,6 +64,21 @@ export class ImageController {
         }        
     }
 
+    async getImagesById(req: Request, res: Response) {
+        try {
+            const token: string = req.headers.authorization as string
+            const id: string = req.params.id as string
+
+            const images: Image[] = await ImageController.imageBusiness.getImagesById(token, id)
+
+            res.status(200).send({ message: images })
+        } catch (error) {
+            res.status(error.code || 400).send({ error: error.message })
+        } finally {
+            await BaseDatabase.destroyConnection()
+        }        
+    }
+
     async getImagesByFilters(req: Request, res: Response) {
         try {
             const token: string = req.headers.authorization as string
