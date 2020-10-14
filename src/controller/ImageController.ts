@@ -23,15 +23,13 @@ export class ImageController {
                 subtitle: req.body.subtitle as string,
                 file: req.body.file as string,
                 tags: req.body.tags as string,
-                collection: req.body.collection as string
             }
 
             const token: string = req.headers.authorization as string
 
-            await ImageController.imageBusiness.createImage(input, token)
+            const id: string = await ImageController.imageBusiness.createImage(input, token)
 
-            res.status(200).send({ message: "Image saved successfully" })
-
+            res.status(200).send({ message: id })
         } catch (error) {
             res.status(error.code || 400).send({ error: error.message })
         }  

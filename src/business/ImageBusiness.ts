@@ -19,7 +19,7 @@ export class ImageBusiness {
      ){}
 
     async createImage(image: ImageInputDTO, token: string) {
-        if (!image.collection || !image.file || !image.subtitle || !image.tags || !token) {
+        if (!image.file || !image.subtitle || !image.tags || !token) {
             throw new InvalidParameterError("Missing input")
         }
 
@@ -36,8 +36,9 @@ export class ImageBusiness {
             date,
             image.file,
             image.tags,
-            image.collection
         )
+
+        return id
     }
 
     async getAllImages(token: string) {

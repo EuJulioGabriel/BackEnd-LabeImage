@@ -11,7 +11,6 @@ const imageDatabase = {
             date: string,
             file: string,
             tags: string,
-            collection: string
         ) => { }
     ),
     getAllImages: jest.fn( async (id: string) => { }),
@@ -47,8 +46,7 @@ describe("Testa o método de criação de imagem", () => {
             const image: ImageInputDTO = {
                 subtitle: "",
                 file: "https://picsum.photos/200/300",
-                tags: "Tag1, Tag2",
-                collection: "Collection 1"                
+                tags: "Tag1, Tag2",               
             }
 
             const token: string = "tokenvalido"
@@ -67,8 +65,7 @@ describe("Testa o método de criação de imagem", () => {
             const image: ImageInputDTO = {
                 subtitle: "Subtitle 1",
                 file: "",
-                tags: "Tag1, Tag2",
-                collection: "Collection 1"                
+                tags: "Tag1, Tag2",               
             }
 
             const token: string = "tokenvalido"
@@ -87,28 +84,7 @@ describe("Testa o método de criação de imagem", () => {
             const image: ImageInputDTO = {
                 subtitle: "Subtitle 1",
                 file: "https://picsum.photos/200/300",
-                tags: "",
-                collection: "Collection 1"                
-            }
-
-            const token: string = "tokenvalido"
-
-            await imageBusiness.createImage(image, token)
-        } catch (error) {
-            expect(error.message).toBe("Missing input")
-            expect(error.code).toBe(422)
-        }
-    })
-
-    test("Deve retornar erro quando a collection não for passada", async () => {
-        expect.assertions(2)
-
-        try {
-            const image: ImageInputDTO = {
-                subtitle: "Subtitle 1",
-                file: "https://picsum.photos/200/300",
-                tags: "Tag1, Tag2",
-                collection: ""                
+                tags: "",               
             }
 
             const token: string = "tokenvalido"
@@ -127,8 +103,7 @@ describe("Testa o método de criação de imagem", () => {
             const image: ImageInputDTO = {
                 subtitle: "Subtitle 1",
                 file: "https://picsum.photos/200/300",
-                tags: "Tag1, Tag2",
-                collection: "Collection"                
+                tags: "Tag1, Tag2",             
             }
 
             const token: string = ""
@@ -144,8 +119,7 @@ describe("Testa o método de criação de imagem", () => {
         const image: ImageInputDTO = {
             subtitle: "Subtitle 1",
             file: "https://picsum.photos/200/300",
-            tags: "Tag1, Tag2",
-            collection: "Collection"                
+            tags: "Tag1, Tag2",         
         }
 
         const token: string = "tokendementirinha"
