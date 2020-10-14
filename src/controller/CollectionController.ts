@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 
-import { CollectionInputDTO } from "../model/Collection"
+import { Collection, CollectionInputDTO } from "../model/Collection"
 
 import { CollectionBusiness } from "../business/CollectionBusiness"
 
@@ -47,6 +47,20 @@ export class CollectionController {
             await CollectionController.collectionBusiness.addImageToCollection(idImage, idCollection, token)
 
             res.status(200).send({ message: "Add Image to collection successfully" })
+        } catch (error) {
+            res.status(error.code || 400).send({ error: error.message })
+        } finally {
+            await BaseDatabase.destroyConnection()
+        }  
+    }
+
+    async getAllCollections(req: Request, res: Response) {
+        try {
+            const token: string = req.headers.authorization as string
+
+            const collections: Collection[] = await CollectionController.collectionBusiness.getAllCollections(token)
+
+            res.status(200).send({ message: collections })
         } catch (error) {
             res.status(error.code || 400).send({ error: error.message })
         } finally {

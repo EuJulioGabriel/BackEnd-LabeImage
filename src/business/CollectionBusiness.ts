@@ -1,6 +1,6 @@
 import moment from "moment"
 
-import { CollectionInputDTO } from "../model/Collection"
+import { Collection, CollectionInputDTO } from "../model/Collection"
 
 import { CollectionDatabase } from "../data/CollectionDatabase"
 
@@ -54,5 +54,17 @@ export class CollectionBusiness {
             idCollection,
             idImage
         )
+    }
+
+    async getAllCollections(token: string) {
+        if (!token) {
+            throw new InvalidParameterError("Missing input")
+        }
+
+        const author: AuthenticationData = this.authenticator.getData(token)
+
+        const data: Collection[] = await this.collectionDatabase.getAllCollections(author.id)
+
+        return data
     }
 }

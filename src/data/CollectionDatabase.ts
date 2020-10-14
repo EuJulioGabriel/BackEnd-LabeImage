@@ -1,5 +1,5 @@
 import { BaseDatabase } from "./BaseDatabase";
-import { CollectionOutputDTO } from "../model/Collection"
+import { Collection, CollectionOutputDTO } from "../model/Collection"
 
 export class CollectionDatabase extends BaseDatabase {
   private static TABLE_NAME = "LABEIMAGE_COLLECTIONS"
@@ -34,7 +34,8 @@ export class CollectionDatabase extends BaseDatabase {
     try {
       const result = await this.getConnection().raw(`
         SELECT * FROM LABEIMAGE_COLLECTIONIMAGES
-        WHERE collection_id = "${collection_id}" AND image_id = "${image_id}";
+        WHERE collection_id = "${collection_id}" AND image_id = "${image_id}"
+        ORDER BY title ASC;
       `)
 
       return result[0]
@@ -56,6 +57,29 @@ export class CollectionDatabase extends BaseDatabase {
             image_id,
         })
         .into(CollectionDatabase.TABLE_NAMETWO)
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
+  public async getAllCollections(userId: string): Promise<Collection[]> {
+    try {
+      const result = await this.getConnection().raw(`
+        SELECT * FROM LABEIMAGE_COLLECTIONS
+        WHERE user_id = "58ed5f21-772b-4161-b483-2b176b0652af";
+      `)
+
+      const data: any[] = result[0]
+
+      const collections: Collection[] = []
+
+      data.forEach((collection: any) => {
+        const newCollection: Collection = Collection.toUserModel(collection)
+
+        collections.push(newCollection)
+      })
+
+      return collections
     } catch (error) {
       throw new Error(error.sqlMessage || error.message)
     }
