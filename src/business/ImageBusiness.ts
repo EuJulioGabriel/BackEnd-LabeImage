@@ -65,6 +65,18 @@ export class ImageBusiness {
         return imagesFromDB
     }
 
+    async getImagesById(token: string, id: string) {
+        if (!token || !id) {
+            throw new InvalidParameterError("Missing input");
+        }
+
+        const author: AuthenticationData = this.authenticator.getData(token)
+
+        const imagesFromDB: Image[] = await this.imageDatabase.getImagesById(id)
+
+        return imagesFromDB
+    }
+
     async getImagesByFilters(date: string, author: string, collection: string, tags: string, token: string ) {
         if (!token) {
             throw new InvalidParameterError("Missing input")

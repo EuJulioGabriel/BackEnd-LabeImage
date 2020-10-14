@@ -76,6 +76,36 @@ export class ImageDatabase extends BaseDatabase {
     }
   }
 
+  public async getImagesById(idCollection: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name
+        FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_COLLECTIONIMAGES LCI
+        ON LI.id = LCI.image_id
+        JOIN LABEIMAGE_USERS LU
+        ON author_id = LU.id 
+        WHERE  LCI.collection_id = "${idCollection}"
+        ORDER BY subtitle ASC;
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
   public async getFilterByDateAuthorCollectionTags(
     userId: string,
     date: string, 
