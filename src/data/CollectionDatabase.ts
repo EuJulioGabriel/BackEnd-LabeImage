@@ -35,7 +35,6 @@ export class CollectionDatabase extends BaseDatabase {
       const result = await this.getConnection().raw(`
         SELECT * FROM LABEIMAGE_COLLECTIONIMAGES
         WHERE collection_id = "${collection_id}" AND image_id = "${image_id}"
-        ORDER BY title ASC;
       `)
 
       return result[0]
