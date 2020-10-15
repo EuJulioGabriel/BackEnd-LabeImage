@@ -82,10 +82,10 @@ export class ImageController {
     async getImagesByFilters(req: Request, res: Response) {
         try {
             const token: string = req.headers.authorization as string
-            const date: string = req.body.date as string
-            const author: string = req.body.author as string
-            const collection: string = req.body.collection as string
-            const tags: string = req.body.tags as string
+            const date: string = req.query.date as string
+            const author: string = req.query.author as string
+            const collection: string = req.query.collection as string
+            const tags: string = req.query.tags as string
 
             const images: Image[] | undefined = await ImageController.imageBusiness.getImagesByFilters(
                 date, 
