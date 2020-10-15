@@ -1,5 +1,5 @@
 import { BaseDatabase } from "./BaseDatabase";
-import { Collection, CollectionOutputDTO } from "../model/Collection"
+import { Collection } from "../model/Collection"
 
 export class CollectionDatabase extends BaseDatabase {
   private static TABLE_NAME = "LABEIMAGE_COLLECTIONS"
@@ -65,7 +65,7 @@ export class CollectionDatabase extends BaseDatabase {
     try {
       const result = await this.getConnection().raw(`
         SELECT * FROM LABEIMAGE_COLLECTIONS
-        WHERE user_id = "58ed5f21-772b-4161-b483-2b176b0652af";
+        WHERE user_id = "${userId}";
       `)
 
       const data: any[] = result[0]
