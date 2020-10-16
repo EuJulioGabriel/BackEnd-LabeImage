@@ -65,4 +65,20 @@ export class CollectionController {
             res.status(error.code || 400).send({ error: error.message })
         }  
     }
+
+    async updateCollectionCover(req: Request, res: Response) {
+        try {
+            const token: string = req.headers.authorization as string
+            const idCollection: string = req.body.id as string
+            const image: string = req.body.image as string
+
+            await CollectionController.collectionBusiness.updateCollectionCover(token, idCollection, image)
+
+            res.status(200).send({ message: "The album cover has been updated successfully"})
+        } catch (error) {
+            res.status(error.code || 400).send({ error: error.message })
+        } finally {
+            await BaseDatabase.destroyConnection()
+        }
+    }
 }

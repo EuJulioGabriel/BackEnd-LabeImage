@@ -67,4 +67,14 @@ export class CollectionBusiness {
 
         return data
     }
+
+    async updateCollectionCover(token: string, idCollection: string, image: string) {
+        if (!token || !idCollection || !image) {
+            throw new InvalidParameterError("Missing input")
+        }
+
+        const author: AuthenticationData = this.authenticator.getData(token)
+
+        await this.collectionDatabase.updateCollectionCover(idCollection, image)
+    }
 }
