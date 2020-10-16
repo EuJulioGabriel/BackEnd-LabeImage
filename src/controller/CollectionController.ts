@@ -63,8 +63,6 @@ export class CollectionController {
             res.status(200).send({ message: collections })
         } catch (error) {
             res.status(error.code || 400).send({ error: error.message })
-        } finally {
-            await BaseDatabase.destroyConnection()
         }  
     }
 }
