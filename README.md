@@ -13,7 +13,7 @@
 -Deploy no Heroku. <br />
 -Organização dos itens por critérios <br />
 
-# O que não funciona
+### O que não funciona
 -Upload de imagem de um arquivo do computador. <br />
 -Deletar uma imagem. <br />
 -Localização do usuário na hora de inserir a imagem. <br />
