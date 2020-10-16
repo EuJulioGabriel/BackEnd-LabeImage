@@ -83,4 +83,16 @@ export class CollectionDatabase extends BaseDatabase {
       throw new Error(error.sqlMessage || error.message)
     }
   }
+
+  public async updateCollectionCover(idCollection: string, image: string): Promise<void> {
+    try {
+      await this.getConnection().raw(`
+        UPDATE LABEIMAGE_COLLECTIONS
+        SET image = "${image}"
+        WHERE id = "${idCollection}";
+      `)
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
 }
