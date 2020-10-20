@@ -1,5 +1,5 @@
 import { BaseDatabase } from "./BaseDatabase";
-import { User } from "../model/User";
+import { User, FollowingOutputDTO } from "../model/User";
 
 export class UserDatabase extends BaseDatabase {
   private static TABLE_NAME = "LABEIMAGE_USERS";
@@ -74,16 +74,26 @@ export class UserDatabase extends BaseDatabase {
     }
   }
 
-  public async getFollower(idFollower: string, idFollowed: string): Promise<any> {
+  public async getFollower(idFollower: string, idFollowed: string): Promise<FollowingOutputDTO[]> {
     try {
       const result = await super.getConnection().raw(`
         SELECT * FROM ${UserDatabase.TABLETWO_NAME} LU
         WHERE LU.follower_id= "${idFollower}" AND LU.followed_id= "${idFollowed}" ;
       `)
 
-      const data: any[] = result[0][0]
+      const data: any[] = result[0]
+      const follower: FollowingOutputDTO[] = []
 
-      return data
+      data.forEach((following) => {
+        const newFollowing: FollowingOutputDTO = {
+          follower_id: following.follower_id,
+          followed_id: following.followed_id
+        }
+
+        follower.push(newFollowing)
+      })
+
+      return follower
     } catch (error) {
       throw new Error(error.sqlMessage || error.message)
     }

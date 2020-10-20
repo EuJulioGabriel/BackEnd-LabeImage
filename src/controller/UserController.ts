@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 
-import { UserInputDTO, LoginInputDTO} from "../model/User"
+import { UserInputDTO, LoginInputDTO, FollowingOutputDTO} from "../model/User"
 
 import { UserBusiness } from "../business/UserBusiness"
 
@@ -103,7 +103,7 @@ export class UserController {
             const idFollowed: string = req.query.idFollowed as string
             const token: string = req.headers.authorization as string
 
-            const follow = await UserController.userBusiness.getFollower(token, idFollowed)
+            const follow: FollowingOutputDTO[] = await UserController.userBusiness.getFollower(token, idFollowed)
 
             res.status(200).send({ message: follow })
         } catch (error) {
