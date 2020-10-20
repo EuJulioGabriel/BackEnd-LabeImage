@@ -58,7 +58,7 @@ export class UserController {
 
     async getUsersByName(req: Request, res: Response) {
         try {
-            const name: string = req.body.name as string
+            const name: string = req.query.name as string
             const token: string = req.headers.authorization as string
 
             const users = await UserController.userBusiness.getUsersByName(name, token)
@@ -97,7 +97,7 @@ export class UserController {
 
     async getFollow(req: Request, res: Response) {
         try {
-            const idFollowed: string = req.body.idFollowed as string
+            const idFollowed: string = req.query.idFollowed as string
             const token: string = req.headers.authorization as string
 
             const follow = await UserController.userBusiness.getFollower(token, idFollowed)
