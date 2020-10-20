@@ -63,3 +63,8 @@ export interface LoginInputDTO{
     email: string
     password: string
 }
+
+export interface FollowingOutputDTO{
+    follower_id: string
+    followed_id: string
+}

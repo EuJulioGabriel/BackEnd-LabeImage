@@ -1,4 +1,4 @@
-import { UserInputDTO, LoginInputDTO } from "../model/User"
+import { UserInputDTO, LoginInputDTO, FollowingOutputDTO } from "../model/User"
 
 import { UserDatabase } from "../data/UserDatabase"
 
@@ -132,7 +132,7 @@ export class UserBusiness {
             throw new InvalidParameterError("You can't unfollow yourself")
         }
 
-        const follow = await this.userDatabase.getFollower(author.id, idFollowed)
+        const follow: FollowingOutputDTO[] = await this.userDatabase.getFollower(author.id, idFollowed)
 
         return follow
     }
