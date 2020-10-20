@@ -84,8 +84,11 @@ export class UserController {
 
     async deleteFollow(req: Request, res: Response) {
         try {
-            const idFollowed: string = req.body.idFollowed as string
+            const idFollowed: string = req.params.id as string
             const token: string = req.headers.authorization as string
+
+            console.log(token)
+            console.log(idFollowed)
 
             await UserController.userBusiness.deleteFollow(token, idFollowed)
 
