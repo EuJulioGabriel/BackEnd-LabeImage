@@ -83,18 +83,21 @@ export class UserBusiness {
 
     async createFollow(token: string, idFollowed: string) {
         if (!idFollowed || !token) {
+            console.log("Entrei 1")
             throw new InvalidParameterError("Missing input")
         }
 
         const author: AuthenticationData = this.authenticator.getData(token)
 
         if (idFollowed === author.id) {
+            console.log("Entrei 2")
             throw new InvalidParameterError("You can't follow yourself")
         }
 
         const follow = await this.userDatabase.getFollower(author.id, idFollowed)
 
-        if(follow) {
+        if(follow.length > 0) {
+            console.log("Entrei 3")
             throw new InvalidParameterError("You already follow this user")
         }
 
@@ -114,7 +117,7 @@ export class UserBusiness {
 
         const follow = await this.userDatabase.getFollower(author.id, idFollowed)
 
-        if(!follow) {
+        if(follow.length === 0) {
             throw new InvalidParameterError("You can’t stop following a user you don’t follow")
         }
 
