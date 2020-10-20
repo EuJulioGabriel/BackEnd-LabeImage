@@ -66,6 +66,19 @@ export class CollectionController {
         }  
     }
 
+    async getAllCollectionsByProfile(req: Request, res: Response) {
+        try {
+            const token: string = req.headers.authorization as string
+            const id: string = req.params.id as string
+
+            const collections: Collection[] = await CollectionController.collectionBusiness.getAllCollectionsByProfile(id, token)
+
+            res.status(200).send({ message: collections })
+        } catch (error) {
+            res.status(error.code || 400).send({ error: error.message })
+        }  
+    }
+
     async updateCollectionCover(req: Request, res: Response) {
         try {
             const token: string = req.headers.authorization as string

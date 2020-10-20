@@ -4,7 +4,7 @@ import { UserDatabase } from "../data/UserDatabase"
 
 import { IdGenerator } from "../services/IdGenerator"
 import { HashManager } from "../services/HashManager"
-import { Authenticator } from "../services/Authenticator"
+import { AuthenticationData, Authenticator } from "../services/Authenticator";
 
 import { InvalidParameterError } from "../error/InvalidParameterError"
 import { NotFoundError } from "../error/NotFoundError"
@@ -69,5 +69,71 @@ export class UserBusiness {
         const accessToken = this.authenticator.generateToken({ id: userFromDB.getId() })
 
         return accessToken
+    }
+
+    async getUsersByName(name: string, token: string) {
+        if (!token ) {
+            throw new InvalidParameterError("Missing input")
+        }
+
+        const usersFromDB = await this.userDatabase.getUsersByName(name)
+
+        return usersFromDB
+    }
+
+    async createFollow(token: string, idFollowed: string) {
+        if (!idFollowed || !token) {
+            throw new InvalidParameterError("Missing input")
+        }
+
+        const author: AuthenticationData = this.authenticator.getData(token)
+
+        if (idFollowed === author.id) {
+            throw new InvalidParameterError("You can't follow yourself")
+        }
+
+        const follow = await this.userDatabase.getFollower(author.id, idFollowed)
+
+        if(follow) {
+            throw new InvalidParameterError("You already follow this user")
+        }
+
+        await this.userDatabase.createFollow(author.id, idFollowed)
+    }
+
+    async deleteFollow(token: string, idFollowed: string) {
+        if (!idFollowed || !token) {
+            throw new InvalidParameterError("Missing input")
+        }
+
+        const author: AuthenticationData = this.authenticator.getData(token)
+
+        if (idFollowed === author.id) {
+            throw new InvalidParameterError("You can't unfollow yourself")
+        }
+
+        const follow = await this.userDatabase.getFollower(author.id, idFollowed)
+
+        if(!follow) {
+            throw new InvalidParameterError("You can’t stop following a user you don’t follow")
+        }
+
+        await this.userDatabase.deleteFollow(author.id, idFollowed)
+    }
+
+    async getFollower(token: string, idFollowed: string) {
+        if (!idFollowed || !token) {
+            throw new InvalidParameterError("Missing input")
+        }
+
+        const author: AuthenticationData = this.authenticator.getData(token)
+
+        if (idFollowed === author.id) {
+            throw new InvalidParameterError("You can't unfollow yourself")
+        }
+
+        const follow = await this.userDatabase.getFollower(author.id, idFollowed)
+
+        return follow
     }
 }

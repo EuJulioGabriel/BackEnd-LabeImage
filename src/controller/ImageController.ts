@@ -100,4 +100,18 @@ export class ImageController {
             await BaseDatabase.destroyConnection()
         }        
     }
+
+    async getFeed(req: Request, res: Response) {
+        try {
+            const token: string = req.headers.authorization as string
+
+            const images: Image[] = await ImageController.imageBusiness.getFeed(token)
+
+            res.status(200).send({ message: images })
+        } catch (error) {
+            res.status(error.code || 400).send({ error: error.message })
+        } finally {
+            await BaseDatabase.destroyConnection()
+        }        
+    }
 }
