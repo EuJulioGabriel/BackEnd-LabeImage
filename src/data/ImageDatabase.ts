@@ -652,4 +652,33 @@ export class ImageDatabase extends BaseDatabase {
       throw new Error(error.sqlMessage || error.message)
     }
   }
+
+  public async getFeed(userId: string): Promise<Image[]> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT LI.id, LI.subtitle, LI.author_id, LI.createdAt, LI.file, LI.tags, 
+        LU.name FROM LABEIMAGE_IMAGES LI
+        JOIN LABEIMAGE_FOLLOWING LF
+        ON LI.author_id = LF.followed_id
+        JOIN LABEIMAGE_USERS LU
+        ON LU.id = LI.author_id
+        WHERE LF.follower_id = "${userId}"
+        ORDER BY createdAt DESC;        
+      `)
+
+      const data: any[] = result[0]
+
+      const images: Image[] = []
+
+      data.forEach((image: any) => {
+        const newImage: Image = Image.toUserModel(image)
+
+        images.push(newImage)
+      })
+
+      return images
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
 }

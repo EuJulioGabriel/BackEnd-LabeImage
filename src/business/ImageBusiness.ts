@@ -212,4 +212,16 @@ export class ImageBusiness {
             return imagesFromDB
         }
     }
+
+    async getFeed(token: string) {
+        if (!token) {
+            throw new InvalidParameterError("Missing input");
+        }
+
+        const author: AuthenticationData = this.authenticator.getData(token)
+
+        const imagesFromDB: Image[] = await this.imageDatabase.getFeed(author.id)
+
+        return imagesFromDB
+    }
 }
