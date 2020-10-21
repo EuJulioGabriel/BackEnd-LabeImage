@@ -1,4 +1,4 @@
-import { UserInputDTO, LoginInputDTO, FollowingOutputDTO } from "../model/User"
+import { UserInputDTO, LoginInputDTO, FollowingOutputDTO, User } from "../model/User"
 
 import { UserDatabase } from "../data/UserDatabase"
 
@@ -54,7 +54,7 @@ export class UserBusiness {
             throw new InvalidParameterError("Invalid password")
         }
 
-        const userFromDB = await this.userDatabase.getUserByEmail(user.email)
+        const userFromDB: User | undefined = await this.userDatabase.getUserByEmail(user.email)
 
         if (!userFromDB) {
             throw new NotFoundError("User not found")
@@ -76,28 +76,25 @@ export class UserBusiness {
             throw new InvalidParameterError("Missing input")
         }
 
-        const usersFromDB = await this.userDatabase.getUsersByName(name)
+        const usersFromDB: User[] | undefined = await this.userDatabase.getUsersByName(name)
 
         return usersFromDB
     }
 
     async createFollow(token: string, idFollowed: string) {
         if (!idFollowed || !token) {
-            console.log("Entrei 1")
             throw new InvalidParameterError("Missing input")
         }
 
         const author: AuthenticationData = this.authenticator.getData(token)
 
         if (idFollowed === author.id) {
-            console.log("Entrei 2")
             throw new InvalidParameterError("You can't follow yourself")
         }
 
-        const follow = await this.userDatabase.getFollower(author.id, idFollowed)
+        const follow: FollowingOutputDTO[] = await this.userDatabase.getFollower(author.id, idFollowed)
 
         if(follow.length > 0) {
-            console.log("Entrei 3")
             throw new InvalidParameterError("You already follow this user")
         }
 
@@ -115,7 +112,7 @@ export class UserBusiness {
             throw new InvalidParameterError("You can't unfollow yourself")
         }
 
-        const follow = await this.userDatabase.getFollower(author.id, idFollowed)
+        const follow: FollowingOutputDTO[] = await this.userDatabase.getFollower(author.id, idFollowed)
 
         if(follow.length === 0) {
             throw new InvalidParameterError("You can’t stop following a user you don’t follow")
@@ -130,10 +127,6 @@ export class UserBusiness {
         }
 
         const author: AuthenticationData = this.authenticator.getData(token)
-
-        if (idFollowed === author.id) {
-            throw new InvalidParameterError("You can't unfollow yourself")
-        }
 
         const follow: FollowingOutputDTO[] = await this.userDatabase.getFollower(author.id, idFollowed)
 
