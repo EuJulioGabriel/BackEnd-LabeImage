@@ -69,6 +69,19 @@ export class UserController {
         }
     }
 
+    async getUserById(req: Request, res: Response) {
+        try {
+            const id: string = req.params.id as string
+            const token: string = req.headers.authorization as string
+
+            const users = await UserController.userBusiness.getUserById(id, token)
+
+            res.status(200).send({ message: users })
+        } catch (error) {
+            res.status(error.code || 400).send({ error: error.message })
+        }
+    }
+
     async createFollow(req: Request, res: Response) {
         try {
             const idFollowed: string = req.body.idFollowed as string
