@@ -81,6 +81,16 @@ export class UserBusiness {
         return usersFromDB
     }
 
+    async getUserById(id: string, token: string) {
+        if (!token || !id) {
+            throw new InvalidParameterError("Missing input")
+        }
+
+        const userFromDb: User[] | undefined = await this.userDatabase.getUserById(id)
+
+        return userFromDb
+    }
+
     async createFollow(token: string, idFollowed: string) {
         if (!idFollowed || !token) {
             throw new InvalidParameterError("Missing input")

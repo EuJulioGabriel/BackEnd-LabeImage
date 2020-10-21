@@ -74,6 +74,20 @@ export class UserDatabase extends BaseDatabase {
     }
   }
 
+  public async getUserById(id: string): Promise<User[] | undefined> {
+    try {
+      const result = await super.getConnection().raw(`
+        SELECT * from ${UserDatabase.TABLE_NAME} WHERE id = '${id}'
+      `);
+
+      const data: any[] = result[0][0]
+
+      return data
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message)
+    }
+  }
+
   public async getFollower(idFollower: string, idFollowed: string): Promise<FollowingOutputDTO[]> {
     try {
       const result = await super.getConnection().raw(`
