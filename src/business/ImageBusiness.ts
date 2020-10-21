@@ -60,7 +60,7 @@ export class ImageBusiness {
 
         const author: AuthenticationData = this.authenticator.getData(token)
 
-        const imagesFromDB: Image = await this.imageDatabase.getImageById(id, author.id)
+        const imagesFromDB: Image = await this.imageDatabase.getImageById(id)
 
         return imagesFromDB
     }
