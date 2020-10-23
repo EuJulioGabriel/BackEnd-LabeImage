@@ -12,11 +12,16 @@
 -22 testes automatizados. <br />
 -Deploy no Heroku. <br />
 -Organização dos itens por critérios <br />
+-Busca de usuários. <br />
+-Perfil de um usuário. <br />
+-Seguir e deixar de seguir. <br />
+-Feed. <br />
 
 ### O que não funciona
 -Upload de imagem de um arquivo do computador. <br />
 -Deletar uma imagem. <br />
 -Localização do usuário na hora de inserir a imagem. <br />
+-Chat de conversa. <br />
 
 Deploy
 https://labeimage.herokuapp.com/
